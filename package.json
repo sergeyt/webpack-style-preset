@@ -4,12 +4,12 @@
   "main": "index.js",
   "dependencies": {
     "autoprefixer": "^9.8.6",
-    "css-loader": "^4.2.0",
+    "css-loader": "^4.2.2",
     "mini-css-extract-plugin": "^0.10.0",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "sass-loader": "^10.0.0",
-    "source-map-loader": "^1.0.1",
+    "source-map-loader": "^1.0.2",
     "style-loader": "^1.2.1"
   }
 }
