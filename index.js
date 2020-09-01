@@ -1,6 +1,15 @@
 const path = require("path");
 const ExtractPlugin = require("mini-css-extract-plugin");
 
+function regexEqual(r1, r2) {
+  return (
+    r1 instanceof RegExp &&
+    r2 instanceof RegExp &&
+    r1.source === r2.source &&
+    r1.flags.split("").sort().join("") === r2.flags.split("").sort().join("")
+  );
+}
+
 module.exports = function withSass(
   config,
   { isDevelopment, noExtractPlugin } = {}
@@ -72,7 +81,16 @@ module.exports = function withSass(
     ".scss",
   ]);
   config.resolve.extensions = [...extensions];
-  config.module.rules.push(...rules);
+
+  for (const rule of rules) {
+    const i = config.module.rules.findIndex((t) =>
+      regexEqual(t.test, rule.test)
+    );
+    if (i >= 0) {
+      config.module.rules.splice(i);
+    }
+    config.module.rules.push(rule);
+  }
 
   if (!noExtractPlugin) {
     config.plugins.push(
