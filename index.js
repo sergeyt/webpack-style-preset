@@ -1,9 +1,14 @@
 const path = require("path");
 const ExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = function withSass(config) {
-  const NODE_ENV = process.env.NODE_ENV || "development";
-  const isDevelopment = NODE_ENV === "development";
+module.exports = function withSass(
+  config,
+  { isDevelopment, noExtractPlugin } = {}
+) {
+  if (!isDevelopment) {
+    const NODE_ENV = process.env.NODE_ENV || "development";
+    isDevelopment = NODE_ENV === "development";
+  }
 
   const postcssLoader = {
     loader: "postcss-loader",
@@ -27,7 +32,9 @@ module.exports = function withSass(config) {
       test: /\.css$/,
       use: [
         "source-map-loader",
-        isDevelopment ? "style-loader" : ExtractPlugin.loader,
+        isDevelopment || noExtractPlugin
+          ? "style-loader"
+          : ExtractPlugin.loader,
         "css-loader",
         postcssLoader,
       ],
@@ -36,7 +43,9 @@ module.exports = function withSass(config) {
       test: /\.scss$/,
       use: [
         "source-map-loader",
-        isDevelopment ? "style-loader" : ExtractPlugin.loader,
+        isDevelopment || noExtractPlugin
+          ? "style-loader"
+          : ExtractPlugin.loader,
         "css-loader",
         postcssLoader,
         sassLoader,
@@ -50,16 +59,29 @@ module.exports = function withSass(config) {
   if (!config.resolve) {
     config.resolve = {};
   }
+  if (!config.rules) {
+    config.rules = [];
+  }
+  if (!config.plugins) {
+    config.plugins = [];
+  }
 
-  config.resolve.extensions = [...(config.resolve.extensions || []), ".scss"];
-  config.module.rules = [...(config.module.rules || []), ...rules];
-  config.plugins = [
-    ...(config.plugins || []),
-    new ExtractPlugin({
-      filename: isDevelopment ? "[name].css" : "[name].[hash].css",
-      chunkFilename: isDevelopment ? "[id].css" : "[id].[hash].css",
-    }),
-  ];
-  
+  const extensions = new Set([
+    ...(config.resolve.extensions || []),
+    ".css",
+    ".scss",
+  ]);
+  config.resolve.extensions = [...extensions];
+  config.rules.push(...rules);
+
+  if (!noExtractPlugin) {
+    config.plugins.push(
+      new ExtractPlugin({
+        filename: isDevelopment ? "[name].css" : "[name].[hash].css",
+        chunkFilename: isDevelopment ? "[id].css" : "[id].[hash].css",
+      })
+    );
+  }
+
   return config;
 };
