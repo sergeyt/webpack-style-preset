@@ -59,8 +59,8 @@ module.exports = function withSass(
   if (!config.resolve) {
     config.resolve = {};
   }
-  if (!config.rules) {
-    config.rules = [];
+  if (!config.module.rules) {
+    config.module.rules = [];
   }
   if (!config.plugins) {
     config.plugins = [];
@@ -72,7 +72,7 @@ module.exports = function withSass(
     ".scss",
   ]);
   config.resolve.extensions = [...extensions];
-  config.rules.push(...rules);
+  config.module.rules.push(...rules);
 
   if (!noExtractPlugin) {
     config.plugins.push(
