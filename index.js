@@ -22,11 +22,17 @@ module.exports = function withSass(
   const postcssLoader = {
     loader: "postcss-loader",
     options: {
-      plugins: [require("autoprefixer")({}), require("postcss-preset-env")({})],
+      postcssOptions: {
+        plugins: [
+          require("autoprefixer")({}),
+          require("postcss-preset-env")({}),
+        ],
+      },
     },
   };
 
   const sassOptions = {
+    implementation: require("sass"),
     outputStyle: "expanded",
     includePaths: [path.resolve(__dirname, "node_modules")],
   };
